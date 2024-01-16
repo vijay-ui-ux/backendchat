@@ -164,9 +164,9 @@ wss.on('connection', async (ws) => {
           i++;
             // ws.send(JSON.stringify(data));
             console.log(receiveremail, senderemail, parsedMessage, '167::')
-            if((receiveremail === parsedMessage.receiveremail && senderemail === parsedMessage.senderemail) || (receiveremail === parsedMessage.senderemail && senderemail === parsedMessage.receiveremail)) {
+         //   if((receiveremail === parsedMessage.receiveremail && senderemail === parsedMessage.senderemail) || (receiveremail === parsedMessage.senderemail && senderemail === parsedMessage.receiveremail)) {
               client.send(JSON.stringify(parsedMessage));
-            }
+          //  }
           }
         });
       } catch (error) {

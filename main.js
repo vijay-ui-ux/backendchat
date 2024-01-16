@@ -153,7 +153,42 @@ wss.on('connection', async (ws) => {
             await collection.findOneAndUpdate({_id: dataArray[filterIndex]._id}, updateDoc);
           }
         let i=0;
-        Array.from(wss.clients).forEach((client, index) => {
+
+        switch (parsedMessage.type) {
+          case 'connect':
+            // Store the WebSocket instance associated with a user ID
+            // For simplicity, you can use an object as a basic store here
+            // In a real application, you might want to use a database or a more robust data structure.
+            ws.userId = parsedMessage.userId;
+            break;
+    
+          case 'message':
+            // Find the WebSocket instance associated with the recipient's user ID
+            const recipient = wss.clients.find((client) => client.userId === parsedMessage.recipientUserId);
+    
+            // Send the message to the recipient
+            if (recipient) {
+              recipient.send(JSON.stringify({
+                type: 'message',
+                senderUserId: ws.userId,
+                content: parsedMessage.content,
+              }));
+            } else {
+              // Handle if the recipient is not found
+              ws.send(JSON.stringify({
+                type: 'error',
+                message: 'Recipient not found',
+              }));
+            }
+            break;
+    
+          // Add more message types and handling as needed
+    
+          default:
+            // Handle unknown message types
+            break;
+        }
+       /*  Array.from(wss.clients).forEach((client, index) => {
           if (client !== ws && client.readyState === WebSocket.OPEN) {
            // if(senderemail & receiveremail) {
               // data = collection.find({receiveremail: receiveremail, senderemail: senderemail}).toArray();
@@ -168,7 +203,7 @@ wss.on('connection', async (ws) => {
               client.send(JSON.stringify(parsedMessage));
           //  }
           }
-        });
+        }); */
       } catch (error) {
         console.error('Error parsing message:', error);
       }
